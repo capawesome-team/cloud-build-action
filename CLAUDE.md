@@ -23,4 +23,4 @@ A **composite (Bash) GitHub Action** that creates a native app build on Capaweso
 ## Commands
 
 - `npm run release` — bump version, generate changelog, tag (run locally; needs `npm install` first).
-- CI (`.github/workflows/ci.yml`) runs a live smoke test against Capawesome Cloud and requires the `CAPAWESOME_APP_ID` / `CAPAWESOME_TOKEN` repo secrets, plus a web-capable app with a connected Git repo.
+- CI (`.github/workflows/ci.yml`) runs a live smoke test against Capawesome Cloud: it scaffolds a minimal Capacitor app and uploads it via `path` (so no connected Git repo is needed), then builds it. Requires the `CAPAWESOME_APP_ID` / `CAPAWESOME_TOKEN` repo secrets.
