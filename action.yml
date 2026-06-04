@@ -1,0 +1,133 @@
+name: 'Capawesome Cloud Build Action'
+description: 'Create a native app build on Capawesome Cloud Runners.'
+author: 'Robin Genz <mail@robingenz.dev>'
+
+inputs:
+  appId:
+    description: 'The Capawesome Cloud app ID.'
+    required: true
+  aab:
+    description: 'Download the generated AAB file (Android only). Set to `true` or provide a file path.'
+  apk:
+    description: 'Download the generated APK file (Android only). Set to `true` or provide a file path.'
+  certificate:
+    description: 'The name of the certificate to use for the build.'
+  channel:
+    description: 'The name of the channel to deploy to (Web only). Cannot be combined with `destination`.'
+  destination:
+    description: 'The name of the destination to deploy to (Android/iOS only). Cannot be combined with `channel`.'
+  detached:
+    description: 'Exit immediately after creating the build without waiting for completion. Set to `true` to enable.'
+  environment:
+    description: 'The name of the environment to use for the build.'
+  gitRef:
+    description: 'The Git reference (branch, tag, or commit SHA) to build. Cannot be combined with `path` or `url`.'
+  ipa:
+    description: 'Download the generated IPA file (iOS only). Set to `true` or provide a file path.'
+  path:
+    description: 'Path to local source files to upload. Must be a folder or a zip file. Cannot be combined with `gitRef` or `url`.'
+  platform:
+    description: 'The platform for the build. Must be `ios`, `android`, or `web`.'
+  stack:
+    description: 'The build stack to use. Must be `macos-sequoia` or `macos-tahoe`.'
+  token:
+    description: 'The Capawesome Cloud API token.'
+    required: true
+  type:
+    description: 'The type of build. iOS: `simulator`, `development`, `ad-hoc`, `app-store`, `enterprise`. Android: `debug`, `release`.'
+  url:
+    description: 'URL to a zip file to use as build source. Cannot be combined with `gitRef` or `path`.'
+  variables:
+    description: 'Ad hoc environment variables, one `key=value` pair per line.'
+  variableFile:
+    description: 'Path to a file containing ad hoc environment variables in `.env` format.'
+  zip:
+    description: 'Download the generated ZIP file (Web only). Set to `true` or provide a file path.'
+
+outputs:
+  buildId:
+    description: 'The ID of the created build.'
+    value: ${{ steps.build.outputs.build-id }}
+  buildNumber:
+    description: 'The build number.'
+    value: ${{ steps.build.outputs.build-number }}
+  buildUrl:
+    description: 'The URL to the build in the Capawesome Cloud Console.'
+    value: ${{ steps.build.outputs.build-url }}
+
+runs:
+  using: composite
+  steps:
+    - name: Mask secrets
+      shell: bash
+      env:
+        CAPAWESOME_TOKEN: ${{ inputs.token }}
+      run: |
+        set -euo pipefail
+        mask() {
+          local line escaped
+          while IFS= read -r line; do
+            if [ -z "$line" ]; then continue; fi
+            escaped="${line//%/%25}"
+            escaped="${escaped//$'\r'/%0D}"
+            echo "::add-mask::$escaped"
+          done <<< "$1"
+        }
+        mask "$CAPAWESOME_TOKEN"
+    - name: Create build
+      id: build
+      shell: bash
+      env:
+        CAPAWESOME_TOKEN: ${{ inputs.token }}
+        APP_ID: ${{ inputs.appId }}
+        AAB: ${{ inputs.aab }}
+        APK: ${{ inputs.apk }}
+        CERTIFICATE: ${{ inputs.certificate }}
+        CHANNEL: ${{ inputs.channel }}
+        DESTINATION: ${{ inputs.destination }}
+        DETACHED: ${{ inputs.detached }}
+        ENVIRONMENT: ${{ inputs.environment }}
+        GIT_REF: ${{ inputs.gitRef }}
+        IPA: ${{ inputs.ipa }}
+        SOURCE_PATH: ${{ inputs.path }}
+        PLATFORM: ${{ inputs.platform }}
+        STACK: ${{ inputs.stack }}
+        TYPE: ${{ inputs.type }}
+        URL: ${{ inputs.url }}
+        VARIABLES: ${{ inputs.variables }}
+        VARIABLE_FILE: ${{ inputs.variableFile }}
+        ZIP: ${{ inputs.zip }}
+      run: |
+        set -euo pipefail
+        args=(apps:builds:create --app-id "$APP_ID" --json --yes)
+        if [ -n "$PLATFORM" ];      then args+=(--platform "$PLATFORM"); fi
+        if [ -n "$TYPE" ];          then args+=(--type "$TYPE"); fi
+        if [ -n "$GIT_REF" ];       then args+=(--git-ref "$GIT_REF"); fi
+        if [ -n "$SOURCE_PATH" ];   then args+=(--path "$SOURCE_PATH"); fi
+        if [ -n "$URL" ];           then args+=(--url "$URL"); fi
+        if [ -n "$ENVIRONMENT" ];   then args+=(--environment "$ENVIRONMENT"); fi
+        if [ -n "$CERTIFICATE" ];   then args+=(--certificate "$CERTIFICATE"); fi
+        if [ -n "$STACK" ];         then args+=(--stack "$STACK"); fi
+        if [ -n "$CHANNEL" ];       then args+=(--channel "$CHANNEL"); fi
+        if [ -n "$DESTINATION" ];   then args+=(--destination "$DESTINATION"); fi
+        if [ -n "$VARIABLE_FILE" ]; then args+=(--variable-file "$VARIABLE_FILE"); fi
+        if [ "$DETACHED" = "true" ]; then args+=(--detached); fi
+        if [ "$APK" = "true" ]; then args+=(--apk); elif [ -n "$APK" ]; then args+=(--apk "$APK"); fi
+        if [ "$AAB" = "true" ]; then args+=(--aab); elif [ -n "$AAB" ]; then args+=(--aab "$AAB"); fi
+        if [ "$IPA" = "true" ]; then args+=(--ipa); elif [ -n "$IPA" ]; then args+=(--ipa "$IPA"); fi
+        if [ "$ZIP" = "true" ]; then args+=(--zip); elif [ -n "$ZIP" ]; then args+=(--zip "$ZIP"); fi
+        while IFS= read -r variable; do
+          if [ -n "$variable" ]; then args+=(--variable "$variable"); fi
+        done <<< "$VARIABLES"
+        output_file="$(mktemp)"
+        npx -y @capawesome/cli@4.11.0 "${args[@]}" | tee "$output_file"
+        json="$(sed -n '/^{/,$p' "$output_file")"
+        build_id="$(printf '%s' "$json" | jq -r '.id // empty')"
+        build_number="$(printf '%s' "$json" | jq -r '.numberAsString // empty')"
+        {
+          echo "build-id=$build_id"
+          echo "build-number=$build_number"
+          if [ -n "$build_id" ]; then
+            echo "build-url=https://console.cloud.capawesome.io/apps/$APP_ID/builds/$build_id"
+          fi
+        } >> "$GITHUB_OUTPUT"

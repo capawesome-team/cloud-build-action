@@ -1,0 +1,29 @@
+{
+  "name": "cloud-build-action",
+  "description": "GitHub Action to create a native app build on Capawesome Cloud Runners.",
+  "version": "0.1.0",
+  "author": "Robin Genz <mail@robingenz.dev>",
+  "private": true,
+  "homepage": "https://github.com/capawesome-team/cloud-build-action#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/capawesome-team/cloud-build-action.git"
+  },
+  "bugs": {
+    "url": "https://github.com/capawesome-team/cloud-build-action/issues"
+  },
+  "keywords": [
+    "GitHub",
+    "Actions",
+    "Capacitor",
+    "Android",
+    "iOS"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "release": "commit-and-tag-version"
+  },
+  "devDependencies": {
+    "commit-and-tag-version": "^12.4.0"
+  }
+}

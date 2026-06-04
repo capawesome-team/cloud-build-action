@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-action:
+    name: GitHub Actions Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Test Local Action
+        uses: ./
+        id: test-action
+        with:
+          appId: ${{ secrets.CAPAWESOME_APP_ID }}
+          platform: 'web'
+          gitRef: ${{ github.head_ref || github.ref_name }}
+          token: ${{ secrets.CAPAWESOME_TOKEN }}
+      - name: Print Outputs
+        run: |
+          echo "Build ID: ${{ steps.test-action.outputs.buildId }}"
+          echo "Build Number: ${{ steps.test-action.outputs.buildNumber }}"
+          echo "Build URL: ${{ steps.test-action.outputs.buildUrl }}"
