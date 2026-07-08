@@ -32,6 +32,12 @@ inputs:
     description: 'Path to local source files to upload. Must be a folder or a zip file. Cannot be combined with `gitRef` or `url`.'
   platform:
     description: 'The platform for the build. Must be `ios`, `android`, or `web`.'
+  share:
+    description: 'Create a public share link for the build. Not compatible with `detached`. Set to `true` to enable.'
+  shareDescription:
+    description: 'Additional information shown on the public share page, e.g. what to test.'
+  shareExpiresInDays:
+    description: 'The number of days until the share link expires.'
   stack:
     description: 'The build stack to use. Must be `macos-sequoia` or `macos-tahoe`.'
   token:
@@ -58,6 +64,15 @@ outputs:
   buildUrl:
     description: 'The URL to the build in the Capawesome Cloud Console.'
     value: ${{ steps.build.outputs.build-url }}
+  shareUrl:
+    description: 'The URL to the public share page for the build.'
+    value: ${{ steps.build.outputs.share-url }}
+  shareQrCodeUrl:
+    description: 'The URL to a QR code image (PNG) encoding the public share page.'
+    value: ${{ steps.build.outputs.share-qr-code-url }}
+  shareExpiresAt:
+    description: 'The ISO 8601 timestamp when the share link expires, if set.'
+    value: ${{ steps.build.outputs.share-expires-at }}
 
 runs:
   using: composite
@@ -95,6 +110,9 @@ runs:
         IPA: ${{ inputs.ipa }}
         SOURCE_PATH: ${{ inputs.path }}
         PLATFORM: ${{ inputs.platform }}
+        SHARE: ${{ inputs.share }}
+        SHARE_DESCRIPTION: ${{ inputs.shareDescription }}
+        SHARE_EXPIRES_IN_DAYS: ${{ inputs.shareExpiresInDays }}
         STACK: ${{ inputs.stack }}
         TYPE: ${{ inputs.type }}
         URL: ${{ inputs.url }}
@@ -116,6 +134,9 @@ runs:
         if [ -n "$DESTINATION" ];   then args+=(--destination "$DESTINATION"); fi
         if [ -n "$VARIABLE_FILE" ]; then args+=(--variable-file "$VARIABLE_FILE"); fi
         if [ "$DETACHED" = "true" ]; then args+=(--detached); fi
+        if [ "$SHARE" = "true" ]; then args+=(--share); fi
+        if [ -n "$SHARE_DESCRIPTION" ];    then args+=(--share-description "$SHARE_DESCRIPTION"); fi
+        if [ -n "$SHARE_EXPIRES_IN_DAYS" ]; then args+=(--share-expires-in-days "$SHARE_EXPIRES_IN_DAYS"); fi
         if [ "$APK" = "true" ]; then args+=(--apk); elif [ -n "$APK" ]; then args+=(--apk "$APK"); fi
         if [ "$AAB" = "true" ]; then args+=(--aab); elif [ -n "$AAB" ]; then args+=(--aab "$AAB"); fi
         if [ "$IPA" = "true" ]; then args+=(--ipa); elif [ -n "$IPA" ]; then args+=(--ipa "$IPA"); fi
@@ -124,14 +145,20 @@ runs:
           if [ -n "$variable" ]; then args+=(--variable "$variable"); fi
         done <<< "$VARIABLES"
         output_file="$(mktemp)"
-        npx -y @capawesome/cli@4.11.0 "${args[@]}" | tee "$output_file"
+        npx -y @capawesome/cli@4.12.0 "${args[@]}" | tee "$output_file"
         json="$(sed -n '/^{/,$p' "$output_file")"
         build_id="$(printf '%s' "$json" | jq -r '.id // empty')"
         build_number="$(printf '%s' "$json" | jq -r '.numberAsString // empty')"
+        share_url="$(printf '%s' "$json" | jq -r '.share.url // empty')"
+        share_qr_code_url="$(printf '%s' "$json" | jq -r '.share.qrCodeUrl // empty')"
+        share_expires_at="$(printf '%s' "$json" | jq -r '.share.expiresAt // empty')"
         {
           echo "build-id=$build_id"
           echo "build-number=$build_number"
           if [ -n "$build_id" ]; then
             echo "build-url=https://console.cloud.capawesome.io/apps/$APP_ID/builds/$build_id"
           fi
+          echo "share-url=$share_url"
+          echo "share-qr-code-url=$share_qr_code_url"
+          echo "share-expires-at=$share_expires_at"
         } >> "$GITHUB_OUTPUT"
