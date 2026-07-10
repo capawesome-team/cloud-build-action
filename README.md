@@ -21,6 +21,9 @@ GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.c
     # The Capawesome Cloud app ID.
     # Required.
     appId: ''
+    # The Capawesome Cloud API token.
+    # Required.
+    token: ''
     # Download the generated AAB file (Android only). Set to `true` or provide a file path.
     aab: ''
     # Download the generated APK file (Android only). Set to `true` or provide a file path.
@@ -51,17 +54,14 @@ GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.c
     shareExpiresInDays: ''
     # The build stack to use. Must be `macos-sequoia` or `macos-tahoe`.
     stack: ''
-    # The Capawesome Cloud API token.
-    # Required.
-    token: ''
     # The type of build. iOS: `simulator`, `development`, `ad-hoc`, `app-store`, `enterprise`. Android: `debug`, `release`.
     type: ''
     # URL to a zip file to use as build source. Cannot be combined with `gitRef` or `path`.
     url: ''
-    # Ad hoc environment variables, one `key=value` pair per line.
-    variables: ''
     # Path to a file containing ad hoc environment variables in `.env` format.
     variableFile: ''
+    # Ad hoc environment variables, one `key=value` pair per line.
+    variables: ''
     # Download the generated ZIP file (Web only). Set to `true` or provide a file path.
     zip: ''
 ```
@@ -78,6 +78,8 @@ GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.c
 | `shareExpiresAt` | The ISO 8601 timestamp when the share link expires, if set.  |
 
 ## Example
+
+### Create a build
 
 ```yaml
 name: Build App
@@ -114,7 +116,7 @@ jobs:
           path: app-release.aab
 ```
 
-## Example: Share a build in a pull request
+### Share a build in a pull request
 
 Set `share: true` to create a public share link, then post the QR code and share link as a pull request comment so testers can install the build directly from their phone.
 
