@@ -68,7 +68,7 @@ outputs:
     description: 'The URL to the public share page for the build.'
     value: ${{ steps.build.outputs.share-url }}
   shareQrCodeUrl:
-    description: 'The URL to a QR code image (PNG) encoding the public share page.'
+    description: 'The URL to a QR code image (SVG) encoding the public share page.'
     value: ${{ steps.build.outputs.share-qr-code-url }}
   shareExpiresAt:
     description: 'The ISO 8601 timestamp when the share link expires, if set.'
