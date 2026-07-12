@@ -150,12 +150,13 @@ jobs:
           script: |
             const sha = context.payload.pull_request?.head?.sha || context.sha;
             const commitUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${sha}`;
+            const expiresAt = '${{ steps.build.outputs.shareExpiresAt }}'.slice(0, 10);
             const body = [
               '### 📱 Android build ready to test',
               '',
               '| Build | Commit | Expires |',
               '| --- | --- | --- |',
-              `| [#${{ steps.build.outputs.buildNumber }}](${{ steps.build.outputs.buildUrl }}) | [\`${sha.slice(0, 7)}\`](${commitUrl}) | in 7 days |`,
+              `| [#${{ steps.build.outputs.buildNumber }}](${{ steps.build.outputs.buildUrl }}) | [\`${sha.slice(0, 7)}\`](${commitUrl}) | ${expiresAt} |`,
               '',
               `[<img src="${{ steps.build.outputs.shareQrCodeUrl }}" width="140" alt="QR code" />](${{ steps.build.outputs.shareWebUrl }})`,
               '',
