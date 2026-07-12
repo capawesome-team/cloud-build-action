@@ -64,9 +64,9 @@ outputs:
   buildUrl:
     description: 'The URL to the build in the Capawesome Cloud Console.'
     value: ${{ steps.build.outputs.build-url }}
-  shareUrl:
+  shareWebUrl:
     description: 'The URL to the public share page for the build.'
-    value: ${{ steps.build.outputs.share-url }}
+    value: ${{ steps.build.outputs.share-web-url }}
   shareQrCodeUrl:
     description: 'The URL to a QR code image (PNG) encoding the public share page.'
     value: ${{ steps.build.outputs.share-qr-code-url }}
@@ -145,20 +145,20 @@ runs:
           if [ -n "$variable" ]; then args+=(--variable "$variable"); fi
         done <<< "$VARIABLES"
         output_file="$(mktemp)"
-        npx -y @capawesome/cli@4.16.0 "${args[@]}" | tee "$output_file"
+        npx -y @capawesome/cli@4.16.1 "${args[@]}" | tee "$output_file"
         json="$(sed -n '/^{/,$p' "$output_file")"
         build_id="$(printf '%s' "$json" | jq -r '.id // empty')"
         build_number="$(printf '%s' "$json" | jq -r '.numberAsString // empty')"
-        share_url="$(printf '%s' "$json" | jq -r '.share.url // empty')"
-        share_qr_code_url="$(printf '%s' "$json" | jq -r '.share.qrCodeUrl // empty')"
-        share_expires_at="$(printf '%s' "$json" | jq -r '.share.expiresAt // empty')"
+        share_web_url="$(printf '%s' "$json" | jq -r '.appBuildShare.webUrl // empty')"
+        share_qr_code_url="$(printf '%s' "$json" | jq -r '.appBuildShare.qrCodeUrl // empty')"
+        share_expires_at="$(printf '%s' "$json" | jq -r '.appBuildShare.expiresAt // empty')"
         {
           echo "build-id=$build_id"
           echo "build-number=$build_number"
           if [ -n "$build_id" ]; then
             echo "build-url=https://console.cloud.capawesome.io/apps/$APP_ID/builds/$build_id"
           fi
-          echo "share-url=$share_url"
+          echo "share-web-url=$share_web_url"
           echo "share-qr-code-url=$share_qr_code_url"
           echo "share-expires-at=$share_expires_at"
         } >> "$GITHUB_OUTPUT"

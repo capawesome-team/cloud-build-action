@@ -7,7 +7,7 @@
 GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.capawesome.io/) Runners.
 
 > [!NOTE]
-> The `token` is sensitive and must be stored as an [encrypted secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) (e.g. `CAPAWESOME_TOKEN`) rather than hardcoded in the workflow. We recommend pinning the action to a fixed version (e.g. `@v0.1.1`) for reproducible builds, as no moving major-version tag is maintained.
+> The `token` is sensitive and must be stored as an [encrypted secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) (e.g. `CAPAWESOME_TOKEN`) rather than hardcoded in the workflow. We recommend pinning the action to a fixed version (e.g. `@v0.1.2`) for reproducible builds, as no moving major-version tag is maintained.
 
 ## Related Actions
 
@@ -16,7 +16,7 @@ GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.c
 ## Usage
 
 ```yaml
-- uses: capawesome-team/cloud-build-action@v0.1.1
+- uses: capawesome-team/cloud-build-action@v0.1.2
   with:
     # The Capawesome Cloud app ID.
     # Required.
@@ -73,7 +73,7 @@ GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.c
 | `buildId`        | The ID of the created build.                                 |
 | `buildNumber`    | The build number.                                            |
 | `buildUrl`       | The URL to the build in the Capawesome Cloud Console.        |
-| `shareUrl`       | The URL to the public share page for the build.              |
+| `shareWebUrl`    | The URL to the public share page for the build.              |
 | `shareQrCodeUrl` | The URL to a QR code image (PNG) encoding the public share page. |
 | `shareExpiresAt` | The ISO 8601 timestamp when the share link expires, if set.  |
 
@@ -95,7 +95,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build App
         id: build
-        uses: capawesome-team/cloud-build-action@v0.1.1
+        uses: capawesome-team/cloud-build-action@v0.1.2
         with:
           appId: 'addb597c-9cbd-4cdc-bcc0-cd5c2234a03f'
           platform: 'android'
@@ -134,7 +134,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build App
         id: build
-        uses: capawesome-team/cloud-build-action@v0.1.1
+        uses: capawesome-team/cloud-build-action@v0.1.2
         with:
           appId: 'addb597c-9cbd-4cdc-bcc0-cd5c2234a03f'
           platform: 'android'
@@ -157,9 +157,9 @@ jobs:
               '| --- | --- | --- |',
               `| [#${{ steps.build.outputs.buildNumber }}](${{ steps.build.outputs.buildUrl }}) | [\`${sha.slice(0, 7)}\`](${commitUrl}) | in 7 days |`,
               '',
-              `[<img src="${{ steps.build.outputs.shareQrCodeUrl }}" width="140" alt="QR code" />](${{ steps.build.outputs.shareUrl }})`,
+              `[<img src="${{ steps.build.outputs.shareQrCodeUrl }}" width="140" alt="QR code" />](${{ steps.build.outputs.shareWebUrl }})`,
               '',
-              `**[Open share page →](${{ steps.build.outputs.shareUrl }})**`,
+              `**[Open share page →](${{ steps.build.outputs.shareWebUrl }})**`,
             ].join('\n');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
