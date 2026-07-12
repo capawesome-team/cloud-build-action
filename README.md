@@ -7,7 +7,7 @@
 GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.capawesome.io/) Runners.
 
 > [!NOTE]
-> The `token` is sensitive and must be stored as an [encrypted secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) (e.g. `CAPAWESOME_TOKEN`) rather than hardcoded in the workflow. We recommend pinning the action to a fixed version (e.g. `@v0.1.0`) for reproducible builds, as no moving major-version tag is maintained.
+> The `token` is sensitive and must be stored as an [encrypted secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) (e.g. `CAPAWESOME_TOKEN`) rather than hardcoded in the workflow. We recommend pinning the action to a fixed version (e.g. `@v0.1.1`) for reproducible builds, as no moving major-version tag is maintained.
 
 ## Related Actions
 
@@ -16,7 +16,7 @@ GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.c
 ## Usage
 
 ```yaml
-- uses: capawesome-team/cloud-build-action@v0.1.0
+- uses: capawesome-team/cloud-build-action@v0.1.1
   with:
     # The Capawesome Cloud app ID.
     # Required.
@@ -95,7 +95,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build App
         id: build
-        uses: capawesome-team/cloud-build-action@v0.1.0
+        uses: capawesome-team/cloud-build-action@v0.1.1
         with:
           appId: 'addb597c-9cbd-4cdc-bcc0-cd5c2234a03f'
           platform: 'android'
@@ -134,7 +134,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build App
         id: build
-        uses: capawesome-team/cloud-build-action@v0.1.0
+        uses: capawesome-team/cloud-build-action@v0.1.1
         with:
           appId: 'addb597c-9cbd-4cdc-bcc0-cd5c2234a03f'
           platform: 'android'
@@ -148,14 +148,25 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const sha = context.payload.pull_request?.head?.sha || context.sha;
+            const commitUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${sha}`;
+            const body = [
+              '### 📱 Android build ready to test',
+              '',
+              '| Build | Commit | Expires |',
+              '| --- | --- | --- |',
+              `| [#${{ steps.build.outputs.buildNumber }}](${{ steps.build.outputs.buildUrl }}) | [\`${sha.slice(0, 7)}\`](${commitUrl}) | in 7 days |`,
+              '',
+              `[<img src="${{ steps.build.outputs.shareQrCodeUrl }}" width="140" alt="QR code" />](${{ steps.build.outputs.shareUrl }})`,
+              '',
+              `**[Open share page →](${{ steps.build.outputs.shareUrl }})**`,
+            ].join('\n');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `📱 **Install this build**\n\n`
-                + `![QR code](${{ steps.build.outputs.shareQrCodeUrl }})\n\n`
-                + `[Open share page](${{ steps.build.outputs.shareUrl }})`
-            })
+              body,
+            });
 ```
 
 ## Notes
