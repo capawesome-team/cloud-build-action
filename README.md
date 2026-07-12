@@ -74,7 +74,7 @@ GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.c
 | `buildNumber`    | The build number.                                            |
 | `buildUrl`       | The URL to the build in the Capawesome Cloud Console.        |
 | `shareUrl`       | The URL to the public share page for the build.              |
-| `shareQrCodeUrl` | The URL to a QR code image (SVG) encoding the public share page. |
+| `shareQrCodeUrl` | The URL to a QR code image (PNG) encoding the public share page. |
 | `shareExpiresAt` | The ISO 8601 timestamp when the share link expires, if set.  |
 
 ## Example
@@ -164,7 +164,7 @@ jobs:
 - **Build source**: Provide exactly one of `gitRef`, `path`, or `url`. `gitRef` builds from the connected Git repository; `path` and `url` are experimental.
 - **Deployment**: Use `channel` (Web only) or `destination` (Android/iOS only) to deploy after a successful build. They cannot be combined, and neither can be combined with `detached`.
 - **Artifacts**: `apk`/`aab` (Android), `ipa` (iOS), and `zip` (Web) download the build artifact to the runner. They cannot be combined with `detached`.
-- **Sharing**: Set `share: true` to create a public share page for the build. Use `shareDescription` to add testing notes and `shareExpiresInDays` to expire the link. It cannot be combined with `detached`. The `shareQrCodeUrl` output is a public SVG image you can embed directly in Markdown.
+- **Sharing**: Set `share: true` to create a public share page for the build. Use `shareDescription` to add testing notes and `shareExpiresInDays` to expire the link. It cannot be combined with `detached`. The `shareQrCodeUrl` output is a public PNG image you can embed directly in Markdown or post to services like Slack.
 - **Outputs require [`jq`](https://jqlang.github.io/jq/)**, which is preinstalled on GitHub-hosted runners.
 
 ## License
