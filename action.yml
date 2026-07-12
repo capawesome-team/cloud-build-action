@@ -145,7 +145,7 @@ runs:
           if [ -n "$variable" ]; then args+=(--variable "$variable"); fi
         done <<< "$VARIABLES"
         output_file="$(mktemp)"
-        npx -y @capawesome/cli@4.12.0 "${args[@]}" | tee "$output_file"
+        npx -y @capawesome/cli@4.16.0 "${args[@]}" | tee "$output_file"
         json="$(sed -n '/^{/,$p' "$output_file")"
         build_id="$(printf '%s' "$json" | jq -r '.id // empty')"
         build_number="$(printf '%s' "$json" | jq -r '.numberAsString // empty')"
