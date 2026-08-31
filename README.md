@@ -7,7 +7,7 @@
 GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.capawesome.io/) Runners.
 
 > [!NOTE]
-> The `token` is sensitive and must be stored as an [encrypted secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) (e.g. `CAPAWESOME_TOKEN`) rather than hardcoded in the workflow. We recommend pinning the action to a fixed version (e.g. `@v0.1.2`) for reproducible builds, as no moving major-version tag is maintained. <!-- x-release-please-version -->
+> The `token` is sensitive and must be stored as an [encrypted secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) (e.g. `CAPAWESOME_TOKEN`) rather than hardcoded in the workflow. We recommend pinning the action to a fixed version (e.g. `@v0.1.3`) for reproducible builds, as no moving major-version tag is maintained. <!-- x-release-please-version -->
 
 ## Related Actions
 
@@ -16,7 +16,7 @@ GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.c
 ## Usage
 
 ```yaml
-- uses: capawesome-team/cloud-build-action@v0.1.2 # x-release-please-version
+- uses: capawesome-team/cloud-build-action@v0.1.3 # x-release-please-version
   with:
     # The Capawesome Cloud app ID.
     # Required.
@@ -99,7 +99,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build App
         id: build
-        uses: capawesome-team/cloud-build-action@v0.1.2 # x-release-please-version
+        uses: capawesome-team/cloud-build-action@v0.1.3 # x-release-please-version
         with:
           appId: 'addb597c-9cbd-4cdc-bcc0-cd5c2234a03f'
           platform: 'android'
@@ -138,7 +138,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build App
         id: build
-        uses: capawesome-team/cloud-build-action@v0.1.2 # x-release-please-version
+        uses: capawesome-team/cloud-build-action@v0.1.3 # x-release-please-version
         with:
           appId: 'addb597c-9cbd-4cdc-bcc0-cd5c2234a03f'
           platform: 'android'
