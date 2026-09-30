@@ -50,6 +50,10 @@ GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.c
     path: ''
     # The platform for the build. Must be `ios`, `android`, or `web`.
     platform: ''
+    # Release notes for the deployment to the destination (default text). Requires `destination`.
+    releaseNotes: ''
+    # Path to a JSON file with release notes by locale, e.g. `{"default": "…", "de-DE": "…"}`. Requires `destination`. Cannot be combined with `releaseNotes`.
+    releaseNotesFile: ''
     # Create a public share link for the build. Not compatible with `detached`. Set to `true` to enable.
     share: ''
     # Additional information shown on the public share page, e.g. what to test.
