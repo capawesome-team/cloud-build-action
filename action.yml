@@ -47,7 +47,7 @@ inputs:
   shareExpiresInDays:
     description: 'The number of days until the share link expires.'
   stack:
-    description: 'The build stack to use. Must be `macos-sequoia` or `macos-tahoe`.'
+    description: "The build stack to use. Must be `macos-sequoia`, `macos-tahoe` or `macos-golden-gate`. Defaults to the app's default build stack, or `macos-golden-gate` if the app has none."
   token:
     description: 'The Capawesome Cloud API token.'
     required: true
