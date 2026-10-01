@@ -60,7 +60,7 @@ GitHub Action to create a native app build on [Capawesome Cloud](https://cloud.c
     shareDescription: ''
     # The number of days until the share link expires.
     shareExpiresInDays: ''
-    # The build stack to use. Must be `macos-sequoia` or `macos-tahoe`.
+    # The build stack to use. Must be `macos-sequoia`, `macos-tahoe` or `macos-golden-gate`. Defaults to the app's default build stack, or `macos-golden-gate` if the app has none.
     stack: ''
     # The type of build. iOS: `simulator`, `development`, `ad-hoc`, `app-store`, `enterprise`. Android: `debug`, `release`.
     type: ''
