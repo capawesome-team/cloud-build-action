@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [release-please](https://github.com/googleapis/release-please) for commit guidelines.
 
+## [0.1.4](https://github.com/capawesome-team/cloud-build-action/compare/v0.1.3...v0.1.4) (2026-11-02)
+
+
+### Features
+
+* add release notes inputs ([#6](https://github.com/capawesome-team/cloud-build-action/issues/6)) ([e98c2a8](https://github.com/capawesome-team/cloud-build-action/commit/e98c2a88dccc91f86311370b6d470b187fe88b3a))
+
+
+### Bug Fixes
+
+* update Capawesome CLI to 4.27.3 ([#11](https://github.com/capawesome-team/cloud-build-action/issues/11)) ([6c046b9](https://github.com/capawesome-team/cloud-build-action/commit/6c046b946bf0b2f85c1cfeb3a9a26bd2a56b7ab4))
+
 ## [0.1.3](https://github.com/capawesome-team/cloud-build-action/compare/v0.1.2...v0.1.3) (2026-08-31)
 
 
